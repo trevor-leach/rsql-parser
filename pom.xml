@@ -13,9 +13,9 @@
 
     <!--//////////////////// ABOUT ////////////////////-->
 
-    <groupId>cz.jirutka.rsql</groupId>
+    <groupId>trevor_leach</groupId>
     <artifactId>rsql-parser</artifactId>
-    <version>2.1.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>RSQL-parser</name>
@@ -43,18 +43,20 @@
     </licenses>
 
     <scm>
-        <url>http://github.com/jirutka/rsql-parser</url>
-        <connection>scm:git:git@github.com:jirutka/rsql-parser.git</connection>
+        <url>http://github.com/trevor-leach/rsql-parser</url>
+        <connection>scm:git:git@github.com:trevor-leach/rsql-parser.git</connection>
     </scm>
 
+    <!--
     <ciManagement>
         <system>travis</system>
         <url>https://travis-ci.org/jirutka/rsql-parser</url>
     </ciManagement>
+     -->
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/jirutka/rsql-parser/issues</url>
+        <url>https://github.com/trevor-leach/rsql-parser/issues</url>
     </issueManagement>
 
 
