@@ -83,7 +83,16 @@ public final class RSQLParser {
      * Creates a new instance of {@code RSQLParser} with the default set of comparison operators.
      */
     public RSQLParser() {
-        this.nodesFactory = new NodesFactory(RSQLOperators.defaultOperators());
+        this(true);
+    }
+
+    /**
+     * Creates a new instance of {@code RSQLParser} with the default set of comparison operators.
+     */
+    public RSQLParser(boolean useDefaultOperators) {
+        this.nodesFactory = useDefaultOperators
+                ? new NodesFactory(RSQLOperators.defaultOperators())
+                : new NodesFactory();
     }
 
     /**

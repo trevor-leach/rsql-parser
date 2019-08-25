@@ -50,6 +50,10 @@ public class NodesFactory {
         }
     }
 
+    public NodesFactory() {
+        comparisonOperators = null;
+    }
+
     /**
      * Creates a specific {@link LogicalNode} instance for the specified operator and with the
      * given children nodes.
@@ -62,6 +66,7 @@ public class NodesFactory {
         switch (operator) {
             case AND : return new AndNode(children);
             case OR  : return new OrNode(children);
+            case NOT : return new NotNode(children);
 
             // this normally can't happen
             default  : throw new IllegalStateException("Unknown operator: " + operator);
@@ -81,11 +86,15 @@ public class NodesFactory {
     public ComparisonNode createComparisonNode(
             String operatorToken, String selector, List<String> arguments) throws UnknownOperatorException {
 
-        ComparisonOperator op = comparisonOperators.get(operatorToken);
-        if (op != null) {
-            return new ComparisonNode(op, selector, arguments);
-        } else {
-            throw new UnknownOperatorException(operatorToken);
+        if (null != comparisonOperators) {
+            ComparisonOperator op = comparisonOperators.get(operatorToken);
+            if (op != null) {
+                return new ComparisonNode(op, selector, arguments);
+            } else {
+                throw new UnknownOperatorException(operatorToken);
+            }
         }
+        ComparisonOperator op = new ComparisonOperator(operatorToken);
+        return new ComparisonNode(op, selector, arguments);
     }
 }

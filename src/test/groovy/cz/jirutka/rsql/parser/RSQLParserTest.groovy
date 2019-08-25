@@ -158,24 +158,42 @@ class RSQLParserTest extends Specification {
             input << [ ['chunky', 'bacon', '"ftw!"'], ["'hi!'", '"how\'re you?"'], ['meh'], ['")o("'] ]
     }
 
-
-    def 'parse logical operator: #op'() {
+    def 'parse logical infix operator: #op'() {
         given:
             def expected = factory.createLogicalNode(op, [eq('sel1', 'arg1'), eq('sel2', 'arg2')])
         expect:
             parse("sel1==arg1${op.toString()}sel2==arg2") == expected
         where:
-            op << LogicalOperator.values()
+            op << EnumSet.of(LogicalOperator.AND, LogicalOperator.OR)
     }
 
-    def 'parse alternative logical operator: "#alt"'() {
+    def 'parse logical prefix operator: #op'() {
+        given:
+            def expected = factory.createLogicalNode(op, [eq('sel1', 'arg1')])
+        expect:
+            parse("${op.toString()}sel1==arg1") == expected
+        where:
+            op << EnumSet.of(LogicalOperator.NOT)
+    }
+
+    def 'parse alternative infix logical operator: "#alt"'() {
         given:
             def expected = factory.createLogicalNode(op, [eq('sel1', 'arg1'), eq('sel2', 'arg2')])
         expect:
             parse("sel1==arg1${alt}sel2==arg2") == expected
         where:
-            op << LogicalOperator.values()
+            op << EnumSet.of(LogicalOperator.AND, LogicalOperator.OR)
             alt = op == LogicalOperator.AND ? ' and ' : ' or ';
+    }
+
+    def 'parse alternative prefix logical operator: "#alt"'() {
+        given:
+            def expected = factory.createLogicalNode(op, [eq('sel1', 'arg1')])
+        expect:
+            parse("${alt}sel1==arg1") == expected
+        where:
+            op << EnumSet.of(LogicalOperator.NOT)
+            alt = 'not ';
     }
 
     def 'parse queries with default operators priority: #input'() {
@@ -186,6 +204,8 @@ class RSQLParserTest extends Specification {
             's0==a0;s1==a1;s2==a2'                   | and(eq('s0','a0'), eq('s1','a1'), eq('s2','a2'))
             's0==a0,s1=out=(a10,a11),s2==a2'         | or(eq('s0','a0'), out('s1','a10', 'a11'), eq('s2','a2'))
             's0==a0,s1==a1;s2==a2,s3==a3'            | or(eq('s0','a0'), and(eq('s1','a1'), eq('s2','a2')), eq('s3','a3'))
+            's0==a0;!s1==a1'                         | and(eq('s0','a0'), not(eq('s1','a1')))
+            '!s0==a0;s1==a1'                         | and(not(eq('s0','a0')), eq('s1','a1'))
     }
 
     def 'parse queries with parenthesis: #input'() {
@@ -198,6 +218,8 @@ class RSQLParserTest extends Specification {
             '((s0==a0,s1==a1);s2==a2,s3==a3);s4==a4' | and(or(and(or(eq('s0','a0'), eq('s1','a1')), eq('s2','a2')), eq('s3','a3')), eq('s4','a4'))
             '(s0==a0)'                               | eq('s0', 'a0')
             '((s0==a0));s1==a1'                      | and(eq('s0', 'a0'), eq('s1','a1'))
+            '!(s0==a0,s1==a1);s2==a2'                | and(not(or(eq('s0','a0'), eq('s1','a1'))), eq('s2','a2'))
+            '(!s0==a0,s1==a1);s2==a2'                | and(or(not(eq('s0','a0')), eq('s1','a1')), eq('s2','a2'))
     }
 
     def 'throw exception for unclosed parenthesis: #input'() {
@@ -229,10 +251,11 @@ class RSQLParserTest extends Specification {
 
     //////// Helpers ////////
 
-    def parse(String rsql) { new RSQLParser().parse(rsql) }
+    def parse(String rsql) { new RSQLParser(defaultOperators()).parse(rsql) }
 
     def and(Node... nodes) { new AndNode(nodes as List) }
     def or(Node... nodes) { new OrNode(nodes as List) }
+    def not(Node node) { new NotNode(Arrays.asList(node)) }
     def eq(sel, arg) { new ComparisonNode(EQUAL, sel, [arg as String]) }
     def out(sel, ...args) { new ComparisonNode(NOT_IN, sel, args as List) }
 }

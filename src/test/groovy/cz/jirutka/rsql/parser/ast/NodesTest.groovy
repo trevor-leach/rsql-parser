@@ -27,12 +27,13 @@ import cz.jirutka.rsql.parser.RSQLParser
 import spock.lang.Specification
 
 import static cz.jirutka.rsql.parser.ast.RSQLOperators.EQUAL
+import static cz.jirutka.rsql.parser.ast.RSQLOperators.defaultOperators
 
 class NodesTest extends Specification {
 
     def 'nodes should define toString method'() {
         setup:
-            def rootNode = new RSQLParser().parse(input)
+            def rootNode = new RSQLParser(defaultOperators()).parse(input)
         expect:
             rootNode.toString() == output
         where:
@@ -65,6 +66,6 @@ class NodesTest extends Specification {
         and:
             result == expected
         where:
-            node << [new AndNode([]), new OrNode([]), new ComparisonNode(EQUAL, 'x', ['y'])]
+            node << [new AndNode([]), new OrNode([]), new NotNode([]), new ComparisonNode(EQUAL, 'x', ['y'])]
     }
 }

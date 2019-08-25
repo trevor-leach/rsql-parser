@@ -29,6 +29,7 @@ import spock.lang.Unroll
 
 import static cz.jirutka.rsql.parser.ast.LogicalOperator.AND
 import static cz.jirutka.rsql.parser.ast.LogicalOperator.OR
+import static cz.jirutka.rsql.parser.ast.LogicalOperator.NOT
 import static cz.jirutka.rsql.parser.ast.RSQLOperators.EQUAL
 import static cz.jirutka.rsql.parser.ast.RSQLOperators.GREATER_THAN
 
@@ -47,6 +48,7 @@ class NodesFactoryTest extends Specification {
             operator | expected
             AND      | AndNode
             OR       | OrNode
+            NOT      | NotNode
 
             className = expected.simpleName
     }
