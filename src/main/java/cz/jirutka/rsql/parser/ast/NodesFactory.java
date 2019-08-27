@@ -94,7 +94,7 @@ public class NodesFactory {
                 throw new UnknownOperatorException(operatorToken);
             }
         }
-        ComparisonOperator op = new ComparisonOperator(operatorToken);
+        ComparisonOperator op = new ComparisonOperator(operatorToken, true);
         return new ComparisonNode(op, selector, arguments);
     }
 }
